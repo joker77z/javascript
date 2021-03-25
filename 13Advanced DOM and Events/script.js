@@ -33,11 +33,11 @@ console.log(document.documentElement);
 console.log(document.head);
 console.log(document.body);
 
-document.querySelector(".header");
-document.querySelectorAll(".section");
+const header = document.querySelector(".header");
+const allSections = document.querySelectorAll(".section");
 console.log(allSections);
 
-document.queryElementById("section--1");
+document.getElementById("section--1");
 const allButtons = document.getElementsByTagName("button");
 console.log(allButtons); // node형식과 또 다르게 보일 것이다.
 // 이것의 특징은 만약 웹 페이지 상에서 버튼요소를 delete로 삭제해버린 뒤
@@ -45,7 +45,7 @@ console.log(allButtons); // node형식과 또 다르게 보일 것이다.
 // 이것과 반대로 노드는 웹 상에서 어떤 요소가 지워진다고 해서 변경되지 않는다.
 // 이것을 이용해서 나중에 getElemetsByTagName을 유용하게 사용할 수도 있다.
 
-console.log(document.getElemetsByClassName("btn"));
+console.log(document.getElementsByClassName("btn"));
 // console창에 HTMLCollection 형식으로 모아지는데 유용하게 사용할 떄가 있다.
 // 그러나 보통 그냥 querySelector이 유용하다.
 
