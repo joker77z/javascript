@@ -72,3 +72,53 @@ document
     // 예전에는 이런방식으로 했다.
     // mesasge.parentElement.removeChild(message);
   });
+
+// 184강 : 스타일 속성 및 클래스
+message.style.backgroundColor = "#37383d";
+message.style.width = "120%";
+console.log(message.style.height); // 나오지 않는다.
+console.log(message.style.backgroundColor); // rgb(55, 56, 61)로 나온다.
+// height값을 얻고 싶다면?
+// console.log(getComputedStyle(message).height);
+// height값을 변경하고 싶다면?
+message.style.height =
+  Number.parseFloat(getComputedStyle(message).height, 10) + 30 + "px";
+
+// style.css에서 :root에 있는 것에 대해 설명중이다.
+// 색상을 일괄변경할 수 있어서 편리해보인다.
+// 그 색상을 바꿔보자.
+// 이 방법을 외우지 말자. 보통 위에 message.style.backgroundColor = ~~ 이런식으로 하는게 더 쉽다.
+document.documentElement.style.setProperty("--color-primary", "orangered");
+
+// ------------속성--------------------
+const logo = document.querySelector(".nav__logo");
+console.log(logo.alt);
+console.log(logo.className);
+
+logo.alt = "beautiful minimalist logo";
+
+console.log(logo.designer); // 이렇게 하면 불러와지지 않는다.
+console.log(logo.getAttribute("designer"));
+logo.setAttribute("company", "bankist"); // 속성 추가
+
+console.log(logo.src); // 절대값으로 주소가 다 나온다.
+console.log(logo.getAttribute("src")); // 상대 주소만 나온다.
+
+const link = document.querySelector(".twitter-link");
+console.log(link.href); // 절대값 다나온다.
+console.log(link.getAttribute("href")); // 절대값 다나온다.
+
+const link2 = document.querySelector(".nav__link--btn");
+console.log(link2.href); // 절대값 다나온다.
+console.log(link2.getAttribute("href")); // #만 나온다.
+
+//-------------데이터 스트럭쳐-------------------
+console.log(logo.dataset.versionNumber);
+
+//---------------클래스 변경-----------------
+logo.classList.add("c", "j");
+logo.classList.remove("c", "j");
+logo.classList.toggle("c");
+logo.classList.contains("c");
+// 이렇게는 하지 말 것. 기존게 지워진다.
+// logo.className = 'jonas';
