@@ -90,37 +90,25 @@ message.style.height =
 // 이 방법을 외우지 말자. 보통 위에 message.style.backgroundColor = ~~ 이런식으로 하는게 더 쉽다.
 document.documentElement.style.setProperty("--color-primary", "orangered");
 
-// 185강--------------------------------------------------------
+// 185강 : 부드러운 스크롤 ----------------------------------------
 const btnScrollTo = document.querySelector(".btn--scroll-to");
 const section1 = document.querySelector("#section--1");
 
 btnScrollTo.addEventListener("click", function (e) {
-  const s1coords = section1.getBoundingClientRect();
-  // console.log(s1coords);
-  // console.log(e.target.getBoundingClientRect()); // 버튼의 위치가 브라우저 상단에서 얼마나 떨어졌는지 y(top)값 확인 가능하다.
-
-  //현재 내가 위치한 화면이 x축, y축으로부터 얼마나 떨어졌는지 알려준다.
-  //화면 이동없이 버튼을 클릭하면 0, 0이 나온다. 스크롤을 약간내려보면 y가 25증가한것을 확인.
-  // console.log(window.pageXOffset, window.pageYOffset);
-
-  //현재 내 브라우저 화면 크기를 알려준다.
-  // console.log(
-  //   document.documentElement.clientHeight,
-  //   document.documentElement.clientWidth
-  // );
-
-  // window.scrollTo(s1coords); // 이렇게만 하면 화면을 약간 누르고 버튼을 다시 누르면 작동x
-  //개선
-  // window.scrollTo(
-  //   s1coords.left + window.pageXOffset,
-  //   s1coords.top + window.pageYOffset
-  // );
-  //부드럽게 추가
-  window.scrollTo({
-    left: s1coords.left + window.pageXOffset,
-    top: s1coords.top + window.pageYOffset,
-    behavior: "smooth",
-  });
-  // 최신 웹에서는 이 단 한줄로 사용 가능.
-  // section1.scrollIntoView({ behavior: "smooth" });
+  section1.scrollIntoView({ behavior: "smooth" });
 });
+
+// 186강 : 마우스 오버된 이벤트 1번만 실행 ----------------------------
+const h1 = document.querySelector("h1");
+const alertH1 = function (e) {
+  alert("hi!");
+  // h1.removeEventListener("mouseenter", alertH1);
+};
+h1.addEventListener("mouseenter", alertH1);
+
+// 3초 뒤부터 안눌리게 하고 싶다면?
+setTimeout(() => {
+  h1.removeEventListener("mouseenter", alertH1);
+}, 3000);
+
+// 187~188강 : 이벤트 전파 : 버블링 및 캡처 ----------------------------
