@@ -120,33 +120,44 @@ document.querySelector(".nav__links").addEventListener("click", function (e) {
   }
 });
 
-// 190강 DOM 탐색
-const h1 = document.querySelector('h1');
+// 191강 탭 구성 요소 만들기 ( 3개의 탭. 클릭한 것 active되게 )
+const tabsContainer = document.querySelector('.operations__tab-container');
+const tabs = document.querySelectorAll('.operations__tab');
+const tabsContent = document.querySelectorAll('.operations__content');
 
-// going downards: child
-console.log(h1.querySelectorAll('.highlight')); // Nodelist(2) [span.highlight, span.highlight]
-console.log(h1.childNodes); // 전부 다 가져온다.
-console.log(h1.children); // HTMLCollection(3) [span.highlight, br, span.highlight]
-h1.firstElementChild.style.color = 'white';
-h1.lastElementChild.style.color = 'orangered';
+// tabs.forEach( t => t.addEventListener('click', () => console.log('test'))) // 성능이 안좋다.
+// 혼자 만들어보자 => 성공!
+// tabsContainer.addEventListener('click', function(e) {
+//   e.preventDefault();
+//   console.log(e.target);
+//   tabs.forEach(t => t.classList.remove('operations__tab--active'))
+  
+//   // tabsContainer.children.classList.remove
+//   e.target.classList.add('operations__tab--active');
+//   const data = e.target.getAttribute('data-tab');
+  
+//   tabsContent.forEach(t => {
+//     t.classList.remove('operations__content--active');
+//     if(t.classList.contains(`operations__content--${data}`)) {
+//       t.classList.add('operations__content--active');
+//   }
+// })
+// })
 
-// going upwards : parents
-// 이 두개는 결과가 같다. <div class="header__title">....</div>
-console.log(h1.parentNode);
-console.log(h1.parentElement);
+// 강좌
+tabsContainer.addEventListener('click', function(e) {
+  const clicked = e.target.closest('.operations__tab');
+  console.log(clicked);
 
-h1.closest('.header').style.background = 'var(--gradient-primary)';
-h1.closest('h1').style.background = 'var(--gradient-primary)';
+  if(!clicked) return; //null 이면 return 되버리게. 즉, 더이상 오류가 발생 안되게.
 
-// going sideways : siblings
-console.log(h1.previousElementSibling); // <div class="header__title"> 안에서 h1 전에 있는 건 없어서 null
-console.log(h1.nextElementSibling); // div 안에 h1 다음꺼.
+  // remove active classes
+  tabs.forEach(t => t.classList.remove('operations__tab--active'));
+  tabsContent.forEach(c => c.classList.remove('operations__content--active'));
 
-// 형제 요소들을 한번에 보기
-console.log(h1.previousSibling); // 안나온다.
-console.log(h1.nextSibling); // 안나온다.
-console.log(h1.parentElement.children); // 이렇게 하면 나온다.
-// HTMLCOllection 으로 나오는 부모 > 자식. 배열은 아니지만 배열처럼 이용할 수 있다.
-[...h1.parentElement.children].forEach(function(el) {
-  if(el !== h1) el.style.transform = 'scale(0.5)';
+  // active tab
+  clicked.classList.add('operations__tab--active');
+
+  // activate content area
+  document.querySelector(`.operations__content--${clicked.dataset.tab}`).classList.add('operations__content--active');
 })
