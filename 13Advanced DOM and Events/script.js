@@ -98,47 +98,24 @@ btnScrollTo.addEventListener("click", function (e) {
   section1.scrollIntoView({ behavior: "smooth" });
 });
 
-// 186강 : 마우스 오버된 이벤트 1번만 실행 ----------------------------
-const h1 = document.querySelector("h1");
-const alertH1 = function (e) {
-  alert("hi!");
-  // h1.removeEventListener("mouseenter", alertH1);
-};
-h1.addEventListener("mouseenter", alertH1);
+// 189강 : 이벤트 위임 : 페이지 탐색 구현 -------------------------------
+// #1 : 만약 메뉴가 1000개라고 하면 동일한 기능을 많이 넣는 것이라서 성능에 영향을 미칠 것.
+// document.querySelectorAll(".nav__link").forEach(function (el) {
+//   el.addEventListener("click", function (e) {
+//     e.preventDefault();
+//     //this.href 는 절대값을 얻는데 우리는 상대값을 얻을 것.
+//     const id = this.getAttribute("href"); // #section--1 ~ 4
+//     document.querySelector(id).scrollIntoView({ behavior: "smooth" });
+//   });
+// });
 
-// 3초 뒤부터 안눌리게 하고 싶다면?
-setTimeout(() => {
-  h1.removeEventListener("mouseenter", alertH1);
-}, 3000);
-
-// 187~188강 : 이벤트 전파 : 버블링 및 캡처 ----------------------------
-// 버블링에 의해서 하위 요소, 부모 요소 2개 다 이벤트를 가지고 있다고 하면
-// 하위 요소를 클릭했을 때 부모 요소도 같이 이벤트가 발생된다.
-
-// rgb(255, 255, 255)
-// 클릭할 때마다 어떻게 바뀌는지 쉽게 확인하기 위해 랜덤색상을 우선 만들자
-const randomInt = (min, max) =>
-  Math.trunc(Math.random() * (max - min + 1) + min);
-const randomColor = () =>
-  `rgb(${randomInt(0, 255)}, ${randomInt(0, 255)}, ${randomInt(0, 255)})`;
-
-document.querySelector(".nav__link").addEventListener("click", function (e) {
-  this.style.backgroundColor = randomColor();
-  console.log(e.target); // nav__link가 들어간 a태그가 나온다.
-  console.log(e.currentTarget); // // nav__link가 들어간 a태그가 나온다.
-  console.log(e.currentTarget === this); // true
-
-  // 이벤트 버블링을 멈추려면
-  // e.stopPropagation(); // 일반적으로는 쓰지 않는 것이 좋다.
-});
-
-document.querySelector(".nav__links").addEventListener(
-  "click",
-  function (e) {
-    this.style.backgroundColor = randomColor();
-    console.log(e.target); // nav__link가 들어간 a태그가 나온다.
-    console.log(e.currentTarget); // nav__links 들어간 ul 태그.
-    console.log(e.currentTarget === this); // true
+// #2 : 성능에 영향이 없도록 nav__links에 기능을 넣고 e.target 실제 클릭되는 것을 확인해서 기능이 실행되도록 한다. 버블링 기능을 이용.
+document.querySelector(".nav__links").addEventListener("click", function (e) {
+  e.preventDefault();
+  console.log(e.target);
+  // #1. target이 nav__link 클래스를 가지고 있는지 확인한다.
+  if (e.target.classList.contains("nav__link")) {
+    const id = e.target.getAttribute("href");
+    document.querySelector(id).scrollIntoView({ behavior: "smooth" });
   }
-  // true // 캡처링 ON. 일반적으로 쓰지 않는다. 첫번째로 실행하게 하는듯.
-);
+});
