@@ -90,35 +90,37 @@ message.style.height =
 // 이 방법을 외우지 말자. 보통 위에 message.style.backgroundColor = ~~ 이런식으로 하는게 더 쉽다.
 document.documentElement.style.setProperty("--color-primary", "orangered");
 
-// ------------속성--------------------
-const logo = document.querySelector(".nav__logo");
-console.log(logo.alt);
-console.log(logo.className);
+// 185강--------------------------------------------------------
+const btnScrollTo = document.querySelector(".btn--scroll-to");
+const section1 = document.querySelector("#section--1");
 
-logo.alt = "beautiful minimalist logo";
+btnScrollTo.addEventListener("click", function (e) {
+  const s1coords = section1.getBoundingClientRect();
+  // console.log(s1coords);
+  // console.log(e.target.getBoundingClientRect()); // 버튼의 위치가 브라우저 상단에서 얼마나 떨어졌는지 y(top)값 확인 가능하다.
 
-console.log(logo.designer); // 이렇게 하면 불러와지지 않는다.
-console.log(logo.getAttribute("designer"));
-logo.setAttribute("company", "bankist"); // 속성 추가
+  //현재 내가 위치한 화면이 x축, y축으로부터 얼마나 떨어졌는지 알려준다.
+  //화면 이동없이 버튼을 클릭하면 0, 0이 나온다. 스크롤을 약간내려보면 y가 25증가한것을 확인.
+  // console.log(window.pageXOffset, window.pageYOffset);
 
-console.log(logo.src); // 절대값으로 주소가 다 나온다.
-console.log(logo.getAttribute("src")); // 상대 주소만 나온다.
+  //현재 내 브라우저 화면 크기를 알려준다.
+  // console.log(
+  //   document.documentElement.clientHeight,
+  //   document.documentElement.clientWidth
+  // );
 
-const link = document.querySelector(".twitter-link");
-console.log(link.href); // 절대값 다나온다.
-console.log(link.getAttribute("href")); // 절대값 다나온다.
-
-const link2 = document.querySelector(".nav__link--btn");
-console.log(link2.href); // 절대값 다나온다.
-console.log(link2.getAttribute("href")); // #만 나온다.
-
-//-------------데이터 스트럭쳐-------------------
-console.log(logo.dataset.versionNumber);
-
-//---------------클래스 변경-----------------
-logo.classList.add("c", "j");
-logo.classList.remove("c", "j");
-logo.classList.toggle("c");
-logo.classList.contains("c");
-// 이렇게는 하지 말 것. 기존게 지워진다.
-// logo.className = 'jonas';
+  // window.scrollTo(s1coords); // 이렇게만 하면 화면을 약간 누르고 버튼을 다시 누르면 작동x
+  //개선
+  // window.scrollTo(
+  //   s1coords.left + window.pageXOffset,
+  //   s1coords.top + window.pageYOffset
+  // );
+  //부드럽게 추가
+  window.scrollTo({
+    left: s1coords.left + window.pageXOffset,
+    top: s1coords.top + window.pageYOffset,
+    behavior: "smooth",
+  });
+  // 최신 웹에서는 이 단 한줄로 사용 가능.
+  // section1.scrollIntoView({ behavior: "smooth" });
+});
