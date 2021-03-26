@@ -36,7 +36,7 @@ console.log(document.body);
 const header = document.querySelector(".header");
 const allSections = document.querySelectorAll(".section");
 console.log(allSections);
-
+ 
 document.getElementById("section--1");
 const allButtons = document.getElementsByTagName("button");
 console.log(allButtons); // node형식과 또 다르게 보일 것이다.
@@ -98,7 +98,7 @@ btnScrollTo.addEventListener("click", function (e) {
   section1.scrollIntoView({ behavior: "smooth" });
 });
 
-// 189강 : 이벤트 위임 : 페이지 탐색 구현 -------------------------------
+// 189강 : 이벤트 위임 : 메인메뉴 전부 부드러운 스크롤링 -------------------------------
 // #1 : 만약 메뉴가 1000개라고 하면 동일한 기능을 많이 넣는 것이라서 성능에 영향을 미칠 것.
 // document.querySelectorAll(".nav__link").forEach(function (el) {
 //   el.addEventListener("click", function (e) {
@@ -119,3 +119,34 @@ document.querySelector(".nav__links").addEventListener("click", function (e) {
     document.querySelector(id).scrollIntoView({ behavior: "smooth" });
   }
 });
+
+// 190강 DOM 탐색
+const h1 = document.querySelector('h1');
+
+// going downards: child
+console.log(h1.querySelectorAll('.highlight')); // Nodelist(2) [span.highlight, span.highlight]
+console.log(h1.childNodes); // 전부 다 가져온다.
+console.log(h1.children); // HTMLCollection(3) [span.highlight, br, span.highlight]
+h1.firstElementChild.style.color = 'white';
+h1.lastElementChild.style.color = 'orangered';
+
+// going upwards : parents
+// 이 두개는 결과가 같다. <div class="header__title">....</div>
+console.log(h1.parentNode);
+console.log(h1.parentElement);
+
+h1.closest('.header').style.background = 'var(--gradient-primary)';
+h1.closest('h1').style.background = 'var(--gradient-primary)';
+
+// going sideways : siblings
+console.log(h1.previousElementSibling); // <div class="header__title"> 안에서 h1 전에 있는 건 없어서 null
+console.log(h1.nextElementSibling); // div 안에 h1 다음꺼.
+
+// 형제 요소들을 한번에 보기
+console.log(h1.previousSibling); // 안나온다.
+console.log(h1.nextSibling); // 안나온다.
+console.log(h1.parentElement.children); // 이렇게 하면 나온다.
+// HTMLCOllection 으로 나오는 부모 > 자식. 배열은 아니지만 배열처럼 이용할 수 있다.
+[...h1.parentElement.children].forEach(function(el) {
+  if(el !== h1) el.style.transform = 'scale(0.5)';
+})
