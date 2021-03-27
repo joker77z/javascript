@@ -99,17 +99,6 @@ btnScrollTo.addEventListener("click", function (e) {
 });
 
 // 189강 : 이벤트 위임 : 메인메뉴 전부 부드러운 스크롤링 -------------------------------
-// #1 : 만약 메뉴가 1000개라고 하면 동일한 기능을 많이 넣는 것이라서 성능에 영향을 미칠 것.
-// document.querySelectorAll(".nav__link").forEach(function (el) {
-//   el.addEventListener("click", function (e) {
-//     e.preventDefault();
-//     //this.href 는 절대값을 얻는데 우리는 상대값을 얻을 것.
-//     const id = this.getAttribute("href"); // #section--1 ~ 4
-//     document.querySelector(id).scrollIntoView({ behavior: "smooth" });
-//   });
-// });
-
-// #2 : 성능에 영향이 없도록 nav__links에 기능을 넣고 e.target 실제 클릭되는 것을 확인해서 기능이 실행되도록 한다. 버블링 기능을 이용.
 document.querySelector(".nav__links").addEventListener("click", function (e) {
   e.preventDefault();
   console.log(e.target);
@@ -125,26 +114,6 @@ const tabsContainer = document.querySelector('.operations__tab-container');
 const tabs = document.querySelectorAll('.operations__tab');
 const tabsContent = document.querySelectorAll('.operations__content');
 
-// tabs.forEach( t => t.addEventListener('click', () => console.log('test'))) // 성능이 안좋다.
-// 혼자 만들어보자 => 성공!
-// tabsContainer.addEventListener('click', function(e) {
-//   e.preventDefault();
-//   console.log(e.target);
-//   tabs.forEach(t => t.classList.remove('operations__tab--active'))
-  
-//   // tabsContainer.children.classList.remove
-//   e.target.classList.add('operations__tab--active');
-//   const data = e.target.getAttribute('data-tab');
-  
-//   tabsContent.forEach(t => {
-//     t.classList.remove('operations__content--active');
-//     if(t.classList.contains(`operations__content--${data}`)) {
-//       t.classList.add('operations__content--active');
-//   }
-// })
-// })
-
-// 강좌
 tabsContainer.addEventListener('click', function(e) {
   const clicked = e.target.closest('.operations__tab');
   console.log(clicked);
@@ -161,3 +130,75 @@ tabsContainer.addEventListener('click', function(e) {
   // activate content area
   document.querySelector(`.operations__content--${clicked.dataset.tab}`).classList.add('operations__content--active');
 })
+
+// 192강 : 이벤트 핸들러에 인수 전달 ( 상단 메인메뉴 흐리게 )
+const nav = document.querySelector('.nav');
+// mouseenter는 버블이 되지 않아서 유사한 mouseover 이벤트를 사용한다.
+// mouseenter <-> mouseleave
+// mouseover <-> mouseout
+
+// #2 리팩토링
+const handleHover = function(e) {
+  if(e.target.classList.contains('nav__link')) {
+    const link = e.target;
+    // 클릭한 링크 말고 다른 링크들을 선택해야 한다.
+    // 그러기 위해서 부모로 갔다가 다른 자식들을 선택한다.
+    // nav_link의 부모인 nav__item 클래스들을 선택해야 한다.
+    // const item = link.closest('.nav__item'); 내가 해봤는데 이게 아닌 것 같다.
+    const siblings = link.closest('.nav').querySelectorAll('.nav__link');
+    // const logo = link.closest('.nav__logo') // 내가 해봤는데 아니다.
+    // console.log(logo);
+    const logo2 = link.closest('.nav').querySelector('img');
+    console.log(logo2);
+
+    siblings.forEach(el => {
+      if(el !== e.target) {
+        el.style.opacity = this;
+      }})
+    logo2.style.opacity = this;
+  }
+}
+// #3 콜백함수 대신 함수를 안으로 넣었다.
+// nav.addEventListener('mouseover', e =>
+//   handleHover(e, 0.5) // ✅ 함수가 여기 들어간다! 콜백함수 식으로 안쓰고 여기 들어온다는 점 기억하자.
+  // if(e.target.classList.contains('nav__link')) {
+  //   const link = e.target;
+  //   // 클릭한 링크 말고 다른 링크들을 선택해야 한다.
+  //   // 그러기 위해서 부모로 갔다가 다른 자식들을 선택한다.
+  //   // nav_link의 부모인 nav__item 클래스들을 선택해야 한다.
+  //   // const item = link.closest('.nav__item'); 내가 해봤는데 이게 아닌 것 같다.
+  //   const siblings = link.closest('.nav').querySelectorAll('.nav__link');
+  //   // const logo = link.closest('.nav__logo') // 내가 해봤는데 아니다.
+  //   // console.log(logo);
+  //   const logo2 = link.closest('.nav').querySelector('img');
+  //   console.log(logo2);
+
+  //   siblings.forEach(el => {
+  //     if(el !== e.target) {
+  //       el.style.opacity = 0.5;
+  //     }})
+  //   logo2.style.opacity = 0.5;
+  // }
+// )
+
+
+// nav.addEventListener('mouseout', e =>
+//   handleHover(e, 1)
+  // if(e.target.classList.contains('nav__link')) {
+  //   const link = e.target;
+  //   const siblings = link.closest('.nav').querySelectorAll('.nav__link');
+  //   const logo2 = link.closest('.nav').querySelector('img');
+  //   console.log(logo2);
+
+  //   siblings.forEach(el => {
+  //     if(el !== e.target) {
+  //       el.style.opacity = 1;
+  //     }})
+  //   logo2.style.opacity = 1;
+  // }
+// ) 
+
+
+// #4 bind를 이용한다. 함수 자체를 다른데서 정의하면서 e를 넣고 0.5와 1은 인자로 넣는다.
+nav.addEventListener('mouseover', handleHover.bind(0.5));
+nav.addEventListener('mouseout', handleHover.bind(1));
