@@ -133,21 +133,10 @@ tabsContainer.addEventListener('click', function(e) {
 
 // 192강 : 이벤트 핸들러에 인수 전달 ( 상단 메인메뉴 흐리게 )
 const nav = document.querySelector('.nav');
-// mouseenter는 버블이 되지 않아서 유사한 mouseover 이벤트를 사용한다.
-// mouseenter <-> mouseleave
-// mouseover <-> mouseout
-
-// #2 리팩토링
 const handleHover = function(e) {
   if(e.target.classList.contains('nav__link')) {
     const link = e.target;
-    // 클릭한 링크 말고 다른 링크들을 선택해야 한다.
-    // 그러기 위해서 부모로 갔다가 다른 자식들을 선택한다.
-    // nav_link의 부모인 nav__item 클래스들을 선택해야 한다.
-    // const item = link.closest('.nav__item'); 내가 해봤는데 이게 아닌 것 같다.
     const siblings = link.closest('.nav').querySelectorAll('.nav__link');
-    // const logo = link.closest('.nav__logo') // 내가 해봤는데 아니다.
-    // console.log(logo);
     const logo2 = link.closest('.nav').querySelector('img');
     console.log(logo2);
 
@@ -158,47 +147,20 @@ const handleHover = function(e) {
     logo2.style.opacity = this;
   }
 }
-// #3 콜백함수 대신 함수를 안으로 넣었다.
-// nav.addEventListener('mouseover', e =>
-//   handleHover(e, 0.5) // ✅ 함수가 여기 들어간다! 콜백함수 식으로 안쓰고 여기 들어온다는 점 기억하자.
-  // if(e.target.classList.contains('nav__link')) {
-  //   const link = e.target;
-  //   // 클릭한 링크 말고 다른 링크들을 선택해야 한다.
-  //   // 그러기 위해서 부모로 갔다가 다른 자식들을 선택한다.
-  //   // nav_link의 부모인 nav__item 클래스들을 선택해야 한다.
-  //   // const item = link.closest('.nav__item'); 내가 해봤는데 이게 아닌 것 같다.
-  //   const siblings = link.closest('.nav').querySelectorAll('.nav__link');
-  //   // const logo = link.closest('.nav__logo') // 내가 해봤는데 아니다.
-  //   // console.log(logo);
-  //   const logo2 = link.closest('.nav').querySelector('img');
-  //   console.log(logo2);
-
-  //   siblings.forEach(el => {
-  //     if(el !== e.target) {
-  //       el.style.opacity = 0.5;
-  //     }})
-  //   logo2.style.opacity = 0.5;
-  // }
-// )
-
-
-// nav.addEventListener('mouseout', e =>
-//   handleHover(e, 1)
-  // if(e.target.classList.contains('nav__link')) {
-  //   const link = e.target;
-  //   const siblings = link.closest('.nav').querySelectorAll('.nav__link');
-  //   const logo2 = link.closest('.nav').querySelector('img');
-  //   console.log(logo2);
-
-  //   siblings.forEach(el => {
-  //     if(el !== e.target) {
-  //       el.style.opacity = 1;
-  //     }})
-  //   logo2.style.opacity = 1;
-  // }
-// ) 
-
-
-// #4 bind를 이용한다. 함수 자체를 다른데서 정의하면서 e를 넣고 0.5와 1은 인자로 넣는다.
 nav.addEventListener('mouseover', handleHover.bind(0.5));
 nav.addEventListener('mouseout', handleHover.bind(1));
+
+// 193 #2 section1이 끝난지점에서 나타나게 하려고 한다.
+const initialCoords = section1.getBoundingClientRect();
+console.log(initialCoords); //top과 y가 815로 나온다.
+
+// 193강 : sticky menubar - 어느정도 밑으로 내려오면 상단 메뉴 고정
+// 193 #1
+window.addEventListener('scroll', function() {
+  // console.log(window.scrollY);
+  if(window.scrollY > initialCoords.top) nav.classList.add('sticky')
+  else nav.classList.remove('sticky');
+})
+
+// 이 방법은 성능을 악화시킬 수 있지만 최신 컴퓨터에서는 괜찮을 것.
+// 오래된 모바일폰에서 성능저하 가능성 있음. 다음화를 통해 개선해보자.
