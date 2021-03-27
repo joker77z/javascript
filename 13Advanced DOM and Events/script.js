@@ -29,23 +29,23 @@ document.addEventListener("keydown", function (e) {
   }
 });
 
-console.log(document.documentElement);
-console.log(document.head);
-console.log(document.body);
+// console.log(document.documentElement);
+// console.log(document.head);
+// console.log(document.body);
 
 const header = document.querySelector(".header");
 const allSections = document.querySelectorAll(".section");
-console.log(allSections);
+// console.log(allSections);
  
 document.getElementById("section--1");
 const allButtons = document.getElementsByTagName("button");
-console.log(allButtons); // node형식과 또 다르게 보일 것이다.
+// console.log(allButtons); // node형식과 또 다르게 보일 것이다.
 // 이것의 특징은 만약 웹 페이지 상에서 버튼요소를 delete로 삭제해버린 뒤
 // console창에 allButtons치면 요소 한개가 지워져 있을 것이다.
 // 이것과 반대로 노드는 웹 상에서 어떤 요소가 지워진다고 해서 변경되지 않는다.
 // 이것을 이용해서 나중에 getElemetsByTagName을 유용하게 사용할 수도 있다.
 
-console.log(document.getElementsByClassName("btn"));
+// console.log(document.getElementsByClassName("btn"));
 // console창에 HTMLCollection 형식으로 모아지는데 유용하게 사용할 떄가 있다.
 // 그러나 보통 그냥 querySelector이 유용하다.
 
@@ -76,8 +76,8 @@ document
 // 184강 : 스타일 속성 및 클래스
 message.style.backgroundColor = "#37383d";
 message.style.width = "120%";
-console.log(message.style.height); // 나오지 않는다.
-console.log(message.style.backgroundColor); // rgb(55, 56, 61)로 나온다.
+// console.log(message.style.height); // 나오지 않는다.
+// console.log(message.style.backgroundColor); // rgb(55, 56, 61)로 나온다.
 // height값을 얻고 싶다면?
 // console.log(getComputedStyle(message).height);
 // height값을 변경하고 싶다면?
@@ -101,7 +101,7 @@ btnScrollTo.addEventListener("click", function (e) {
 // 189강 : 이벤트 위임 : 메인메뉴 전부 부드러운 스크롤링 -------------------------------
 document.querySelector(".nav__links").addEventListener("click", function (e) {
   e.preventDefault();
-  console.log(e.target);
+  // console.log(e.target);
   // #1. target이 nav__link 클래스를 가지고 있는지 확인한다.
   if (e.target.classList.contains("nav__link")) {
     const id = e.target.getAttribute("href");
@@ -116,7 +116,7 @@ const tabsContent = document.querySelectorAll('.operations__content');
 
 tabsContainer.addEventListener('click', function(e) {
   const clicked = e.target.closest('.operations__tab');
-  console.log(clicked);
+  // console.log(clicked);
 
   if(!clicked) return; //null 이면 return 되버리게. 즉, 더이상 오류가 발생 안되게.
 
@@ -138,7 +138,7 @@ const handleHover = function(e) {
     const link = e.target;
     const siblings = link.closest('.nav').querySelectorAll('.nav__link');
     const logo2 = link.closest('.nav').querySelector('img');
-    console.log(logo2);
+    // console.log(logo2);
 
     siblings.forEach(el => {
       if(el !== e.target) {
@@ -150,17 +150,53 @@ const handleHover = function(e) {
 nav.addEventListener('mouseover', handleHover.bind(0.5));
 nav.addEventListener('mouseout', handleHover.bind(1));
 
-// 193 #2 section1이 끝난지점에서 나타나게 하려고 한다.
-const initialCoords = section1.getBoundingClientRect();
-console.log(initialCoords); //top과 y가 815로 나온다.
+// 193강 : sticky menubar - 어느정도 밑으로 내려오면 상단 메뉴 고정 -> 194강에서 개선 적용
+// const initialCoords = section1.getBoundingClientRect();
+// console.log(initialCoords); //top과 y가 815로 나온다.
 
-// 193강 : sticky menubar - 어느정도 밑으로 내려오면 상단 메뉴 고정
-// 193 #1
-window.addEventListener('scroll', function() {
-  // console.log(window.scrollY);
-  if(window.scrollY > initialCoords.top) nav.classList.add('sticky')
-  else nav.classList.remove('sticky');
-})
+// window.addEventListener('scroll', function() {
+//   if(window.scrollY > initialCoords.top) nav.classList.add('sticky')
+//   else nav.classList.remove('sticky');
+// })
 
-// 이 방법은 성능을 악화시킬 수 있지만 최신 컴퓨터에서는 괜찮을 것.
-// 오래된 모바일폰에서 성능저하 가능성 있음. 다음화를 통해 개선해보자.
+// 194강 : 더 나은 방법
+
+// #1 IntersectionObserver 예시
+// const obsCallback = function(entries, observer) {
+//   const [entry] = entries;
+//   console.log(entry);
+//   // entries.forEach(entry => {
+//   //   console.log(entry);
+//   // })
+// }
+
+// const obsOptions = {
+//   root : null,
+//   threshold : [0, 0.2],
+// }
+
+// const observer = new IntersectionObserver(obsCallback, obsOptions);
+// observer.observe(section1);
+
+// #2 적용
+// const header = document.querySelector('.header'); // 위에 이미 선언되어 있다.
+const navHeight = nav.getBoundingClientRect();
+console.log(navHeight);
+
+const stickyNav = function(entries) {
+  const [entry] = entries;
+  // console.log(entry); // header를 지났을 때 isIntersecting이 false가 나오고 intersectingRatio가 0이 나온다.
+
+  if(!entry.isIntersecting) {
+    nav.classList.add('sticky');
+  } else {
+    nav.classList.remove('sticky');
+  }
+}
+
+const headerObserver = new IntersectionObserver(stickyNav, {
+  root : null, // 전체 뷰포트 대상이기 때문에
+  threshold : 0,
+  rootMargin : `-${navHiehgt}px`,// 상단에 지정한 여백만큼 추가로 더 남더라도 함수가 실행된다.
+});
+headerObserver.observe(header);
