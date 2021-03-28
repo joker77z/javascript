@@ -189,31 +189,11 @@ const sectionObserver = new IntersectionObserver(revealSection, {
 })
 // #2 section들을 IntersectionObserver에 할당, 일단 모든 섹션을 hidden처리
 allSections.forEach(function (section) {
-  sectionObserver.observe(section);
-  section.classList.add('section--hidden');
+  // sectionObserver.observe(section);
+  // section.classList.add('section--hidden');
 })
 
-
 // 196강 : 지연 로딩 이미지
-// 스스로
-// const revealImg = function(img, observer) {
-//   const [img2] = img;
-//   console.log(img2);
-//   if(!img2.isIntersecting) return;
-//   img2.target.classList.remove('lazy-img');
-//   img2.target.src = `./${img2.target.dataset.src}`
-//   observer.unobserve(img2.target)
-// }
-// const imgObserver = new IntersectionObserver(revealImg, {
-//   root:null,
-//   threshold:1
-// })
-// const allImg = document.querySelectorAll('.features__img');
-// console.log(allImg);
-// allImg.forEach(function(img) {
-//   imgObserver.observe(img);
-// })
-
 // 강의
 const imgTargets = document.querySelectorAll('img[data-src]');
 console.log(imgTargets);
@@ -240,3 +220,79 @@ const imgObserver = new IntersectionObserver(loadImg, {
 })
 
 imgTargets.forEach(img => imgObserver.observe(img))
+
+// 197강 : 슬라이더 구현(1)
+const slides = document.querySelectorAll('.slide');
+const btnLeft = document.querySelector('.slider__btn--left');
+const btnRight = document.querySelector('.slider__btn--right');
+
+const slider = document.querySelector('.slider')
+// slider.style.transform = 'scale(0.4) translateX(-800px)'
+
+// #1 1차 리팩토링 전
+// let curSlide = 0;
+// const maxSlide = slides.length;
+// slider.style.overflow = 'visible';
+// slides.forEach((s, i) => (s.style.transform = `translateX(${100 * i}%)`))
+
+// btnRight.addEventListener('click', function() {
+//   if(curSlide === maxSlide -1) {
+//     curSlide = 0;
+//   } else {
+//     curSlide++;
+//   }
+//   slides.forEach((s, i) => (s.style.transform = `translateX(${100 * (i - curSlide)}%)`))
+// })
+
+// #2 1차 리팩토링
+// let curSlide = 0;
+// const maxSlide = slides.length;
+// slider.style.overflow = 'visible';
+
+// const goToSlide = function(cur) {
+//   slides.forEach((s, i) => (s.style.transform = `translateX(${100 * (i-cur)}%)`))
+// }
+// goToSlide(0);
+
+
+// btnRight.addEventListener('click', function() {
+//   if(curSlide === maxSlide -1) {
+//     curSlide = 0;
+//   } else {
+//     curSlide++;
+//   }
+//   // slides.forEach((s, i) => (s.style.transform = `translateX(${100 * (i - curSlide)}%)`))
+//   goToSlide(curSlide);
+// })
+
+// #3 2차 리팩토링
+let curSlide = 0;
+const maxSlide = slides.length;
+slider.style.overflow = 'visible';
+
+const goToSlide = function(cur) {
+  slides.forEach((s, i) => (s.style.transform = `translateX(${100 * (i-cur)}%)`))
+}
+goToSlide(0);
+
+const nextSlide = function() {
+  if(curSlide === maxSlide -1) {
+   curSlide = 0;
+  } else {
+    curSlide++;
+  }
+  goToSlide(curSlide);
+}
+
+const prevSlide = function() {
+  if(curSlide === 0) {
+    curSlide = maxSlide -1;
+   } else {
+     curSlide--;
+   }
+   goToSlide(curSlide);
+}
+
+btnRight.addEventListener('click', nextSlide);
+// 좌측 버튼도 추가
+btnLeft.addEventListener('click', prevSlide)
