@@ -150,38 +150,9 @@ const handleHover = function(e) {
 nav.addEventListener('mouseover', handleHover.bind(0.5));
 nav.addEventListener('mouseout', handleHover.bind(1));
 
-// 193강 : sticky menubar - 어느정도 밑으로 내려오면 상단 메뉴 고정 -> 194강에서 개선 적용
-// const initialCoords = section1.getBoundingClientRect();
-// console.log(initialCoords); //top과 y가 815로 나온다.
-
-// window.addEventListener('scroll', function() {
-//   if(window.scrollY > initialCoords.top) nav.classList.add('sticky')
-//   else nav.classList.remove('sticky');
-// })
-
-// 194강 : 더 나은 방법
-
-// #1 IntersectionObserver 예시
-// const obsCallback = function(entries, observer) {
-//   const [entry] = entries;
-//   console.log(entry);
-//   // entries.forEach(entry => {
-//   //   console.log(entry);
-//   // })
-// }
-
-// const obsOptions = {
-//   root : null,
-//   threshold : [0, 0.2],
-// }
-
-// const observer = new IntersectionObserver(obsCallback, obsOptions);
-// observer.observe(section1);
-
-// #2 적용
-// const header = document.querySelector('.header'); // 위에 이미 선언되어 있다.
-const navHeight = nav.getBoundingClientRect();
-console.log(navHeight);
+// 193강->194강 개선 적용 : sticky menubar
+const navHeight = nav.getBoundingClientRect().height;
+// console.log(navHeight);
 
 const stickyNav = function(entries) {
   const [entry] = entries;
@@ -197,6 +168,32 @@ const stickyNav = function(entries) {
 const headerObserver = new IntersectionObserver(stickyNav, {
   root : null, // 전체 뷰포트 대상이기 때문에
   threshold : 0,
-  rootMargin : `-${navHiehgt}px`,// 상단에 지정한 여백만큼 추가로 더 남더라도 함수가 실행된다.
+  rootMargin : `-${navHeight}px`,// 상단에 지정한 여백만큼 추가로 더 남더라도 함수가 실행된다.
 });
 headerObserver.observe(header);
+
+
+// 195강 : 스크롤하면 섹션 하나씩 나타나기
+
+// #3 Intersection하면서 들어오는 section들에 닿을 때 section-hidden을 지우도록.
+const revealSection = function(entries, observer) {
+  const [entry] = entries;
+  console.log(entry);
+
+  if(!entry.isIntersecting) return; // 교차되지 않을 때 단순 return되게 (이 부분 잘 이해 x)
+  entry.target.classList.remove('section--hidden')
+  observer.unobserve(entry.target);
+}
+// #1 IntersectionObserver를 변수에 선언.
+const sectionObserver = new IntersectionObserver(revealSection, {
+  root : null,
+  threshold : 0.15,
+})
+
+// #2 section들을 IntersectionObserver에 할당, 일단 모든 섹션을 hidden처리
+
+// const allSections = document.querySelectorAll('.section') // 위에서 선언했다.
+allSections.forEach(function (section) {
+  sectionObserver.observe(section);
+  section.classList.add('section--hidden');
+})
