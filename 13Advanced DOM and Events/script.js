@@ -174,11 +174,9 @@ headerObserver.observe(header);
 
 
 // 195강 : 스크롤하면 섹션 하나씩 나타나기
-
 // #3 Intersection하면서 들어오는 section들에 닿을 때 section-hidden을 지우도록.
 const revealSection = function(entries, observer) {
   const [entry] = entries;
-  console.log(entry);
 
   if(!entry.isIntersecting) return; // 교차되지 않을 때 단순 return되게 (이 부분 잘 이해 x)
   entry.target.classList.remove('section--hidden')
@@ -189,11 +187,56 @@ const sectionObserver = new IntersectionObserver(revealSection, {
   root : null,
   threshold : 0.15,
 })
-
 // #2 section들을 IntersectionObserver에 할당, 일단 모든 섹션을 hidden처리
-
-// const allSections = document.querySelectorAll('.section') // 위에서 선언했다.
 allSections.forEach(function (section) {
   sectionObserver.observe(section);
   section.classList.add('section--hidden');
 })
+
+
+// 196강 : 지연 로딩 이미지
+// 스스로
+// const revealImg = function(img, observer) {
+//   const [img2] = img;
+//   console.log(img2);
+//   if(!img2.isIntersecting) return;
+//   img2.target.classList.remove('lazy-img');
+//   img2.target.src = `./${img2.target.dataset.src}`
+//   observer.unobserve(img2.target)
+// }
+// const imgObserver = new IntersectionObserver(revealImg, {
+//   root:null,
+//   threshold:1
+// })
+// const allImg = document.querySelectorAll('.features__img');
+// console.log(allImg);
+// allImg.forEach(function(img) {
+//   imgObserver.observe(img);
+// })
+
+// 강의
+const imgTargets = document.querySelectorAll('img[data-src]');
+console.log(imgTargets);
+
+const loadImg = function(entries, observer) {
+  const [entry] = entries;
+  
+  if(!entry.isIntersecting) return;
+  entry.target.src = entry.target.dataset.src;
+  entry.target.classList.remove('lazy-img'); // 로딩 속도가 느리다. network - slow3G로 보면 확연히 보인다. blur 제거 후에 이미지가 바뀌는 현상!
+  
+  // 이미지를 바꾸고 나서 
+  // entry.target.addEventListener('load', function() {
+  //   entry.target.classList.remove('lazy-img')
+  // })
+
+  observer.unobserve(entry.target);
+}
+
+const imgObserver = new IntersectionObserver(loadImg, {
+  root : null,
+  threshold : 0,
+  rootMargin: '-200px'
+})
+
+imgTargets.forEach(img => imgObserver.observe(img))
