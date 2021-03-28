@@ -222,77 +222,93 @@ const imgObserver = new IntersectionObserver(loadImg, {
 imgTargets.forEach(img => imgObserver.observe(img))
 
 // 197강 : 슬라이더 구현(1)
-const slides = document.querySelectorAll('.slide');
-const btnLeft = document.querySelector('.slider__btn--left');
-const btnRight = document.querySelector('.slider__btn--right');
+const slider = function() { // 리팩토링하면서 묶음.
+  const slides = document.querySelectorAll('.slide');
+  const btnLeft = document.querySelector('.slider__btn--left');
+  const btnRight = document.querySelector('.slider__btn--right');
 
-const slider = document.querySelector('.slider')
-// slider.style.transform = 'scale(0.4) translateX(-800px)'
+  // const slider = document.querySelector('.slider')
 
-// #1 1차 리팩토링 전
-// let curSlide = 0;
-// const maxSlide = slides.length;
-// slider.style.overflow = 'visible';
-// slides.forEach((s, i) => (s.style.transform = `translateX(${100 * i}%)`))
+  let curSlide = 0;
+  const maxSlide = slides.length;
+  // slider.style.overflow = 'visible';
 
-// btnRight.addEventListener('click', function() {
-//   if(curSlide === maxSlide -1) {
-//     curSlide = 0;
-//   } else {
-//     curSlide++;
-//   }
-//   slides.forEach((s, i) => (s.style.transform = `translateX(${100 * (i - curSlide)}%)`))
-// })
+  // #2 점 구현
+  const dotContainer = document.querySelector('.dots');
 
-// #2 1차 리팩토링
-// let curSlide = 0;
-// const maxSlide = slides.length;
-// slider.style.overflow = 'visible';
+  const createDots = function() {
+    slides.forEach(function(_, i) { // 단지 슬라이드의 개수 4개가 필요한 것뿐이라서 slides.foreach를 하고 i만 필요한 것.
+      // 항상 마지막으로 > beforeend
+      dotContainer.insertAdjacentHTML('beforeend', `<button class="dots__dot" data-slide="${i}"></button>`);
+    });
+  };
 
-// const goToSlide = function(cur) {
-//   slides.forEach((s, i) => (s.style.transform = `translateX(${100 * (i-cur)}%)`))
-// }
-// goToSlide(0);
+  // createDots(); // 리팩토링
 
+  // #3 활성화 점 구현
+  // classList.remove나 add다음에 클래스를 불러올 때 .을 붙이는거 아니다.
+  const activateDot = function(slide) {
+    document
+      .querySelectorAll('.dots__dot').forEach(dot => dot.classList.remove('dots__dot--active'));
 
-// btnRight.addEventListener('click', function() {
-//   if(curSlide === maxSlide -1) {
-//     curSlide = 0;
-//   } else {
-//     curSlide++;
-//   }
-//   // slides.forEach((s, i) => (s.style.transform = `translateX(${100 * (i - curSlide)}%)`))
-//   goToSlide(curSlide);
-// })
-
-// #3 2차 리팩토링
-let curSlide = 0;
-const maxSlide = slides.length;
-slider.style.overflow = 'visible';
-
-const goToSlide = function(cur) {
-  slides.forEach((s, i) => (s.style.transform = `translateX(${100 * (i-cur)}%)`))
-}
-goToSlide(0);
-
-const nextSlide = function() {
-  if(curSlide === maxSlide -1) {
-   curSlide = 0;
-  } else {
-    curSlide++;
+    document
+      .querySelector(`.dots__dot[data-slide="${slide}"]`).classList.add('dots__dot--active');
   }
-  goToSlide(curSlide);
-}
+  // activateDot(0); // 리팩토링
 
-const prevSlide = function() {
-  if(curSlide === 0) {
-    curSlide = maxSlide -1;
-   } else {
-     curSlide--;
-   }
-   goToSlide(curSlide);
-}
+  const goToSlide = function(cur) {
+    slides.forEach((s, i) => (s.style.transform = `translateX(${100 * (i-cur)}%)`))
+  }
+  // goToSlide(0); // 리팩토링
 
-btnRight.addEventListener('click', nextSlide);
-// 좌측 버튼도 추가
-btnLeft.addEventListener('click', prevSlide)
+
+  const nextSlide = function() {
+    if(curSlide === maxSlide -1) {
+    curSlide = 0;
+    } else {
+      curSlide++;
+    }
+    goToSlide(curSlide);
+    activateDot(curSlide);
+  }
+
+  const prevSlide = function() {
+    if(curSlide === 0) {
+      curSlide = maxSlide -1;
+    } else {
+      curSlide--;
+    }
+    goToSlide(curSlide);
+    activateDot(curSlide);
+  }
+
+  const init = function() {
+    goToSlide(0);
+    createDots(); 
+    activateDot(0);
+  }
+  init()
+
+
+  btnRight.addEventListener('click', nextSlide);
+  btnLeft.addEventListener('click', prevSlide);
+
+  // 198강 : 슬라이더 구현(2)
+
+  // #1 키보드 누르면 슬라이드 움직이게
+  document.addEventListener('keydown', function(e) {
+    console.log(e); // 누르는 key값이 ArrowLeft인지 ArrowRight인지 알 수 있다.
+    if(e.key === 'ArrowLeft') prevSlide();
+    e.key === 'ArrowRight' && nextSlide();
+  })
+
+  dotContainer.addEventListener('click', function(e) {
+    if(e.target.classList.contains('dots__dot')) {
+      // const slide = e.target.dataset.slide; // 이렇게 해도 똑같다.
+      const {slide} = e.target.dataset;
+      goToSlide(slide);
+      activateDot(slide);
+    }
+  })
+}
+slider();
