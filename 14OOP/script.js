@@ -7,10 +7,9 @@
 // }
 
 // class declaration
-// 선생님은 이것을 더 선호하기 때문에 이것을 사용.
 class PersonCl {
-  constructor(firstName, birthYear) {
-    this.firstName = firstName;
+  constructor(fullName, birthYear) {
+    this.fullName = fullName;
     this.birthYear = birthYear;
   }
 
@@ -21,23 +20,60 @@ class PersonCl {
   greet() {
     console.log(`hey ${this.firstName}`);
   }
-}
-const taejoon = new PersonCl('taejoon', 1993);
-taejoon.calcAge();
 
-console.log(taejoon.__proto__ === PersonCl.prototype) // true
+  get age() {
+    return 2021 - this.birthYear;
+  }
+
+  // this.fullName은 이미 존재하기 때문에 관습적으로 _fullName 이런식으로 한다. 자바스크립트 특별한 기능이 아닌 네이밍을 다르게 하는 것.
+  // fullName 인자 값으로 들어온 값이 this.fullName으로 가고 set fullName을 통해서 받은 name값을 this._fullName에다가 name값을 받는다.
+  set fullName(name) {
+    console.log(name); // taejoon park
+    if(name.includes(' ')) this._fullName = name;
+    else alert(`${name} is not a full name`)
+  }
+
+  get fullName() { // console창에서 이름.fullName 을 쳐도 나오게 혹은 이런 특성을 이용하게
+    return this._fullName;
+  }
+}
+
+const taejoon = new PersonCl('taejoon park', 1993);
+taejoon.calcAge();
+console.log(taejoon.age); // console창에 taejoon쳐보면 age를 가지고 있는 것이 보인다. 즉, 게터 age()가 메소드가 아닌 속성처럼 보인다.
+// console.log(taejoon.__proto__ === PersonCl.prototype) // true
 
 // 메소드 추가
 // PersonCl.prototype.greet = function() {
 //   console.log(`hey ${this.firstName}`);
 // }
-
 taejoon.greet();
 
-// 1. 클래스는 호이스팅되지 않는다. 즉, 다른 선언같이 밑에 있어도 되는 것과 달리 클래스는 위에 있어야 한다.
-// 2. 클래스는 함수로 반환하고 함수에서 반환한다. first-class citizens 이다.
-// 3. 클래스는 항상 스트릭트 모드에서 실행된다.
+// 새롭게 다시 시도해보자.
+const walter = new PersonCl('walter we', 1965)
 
-// - 생성자 함수를 쓰지 않고 클래스를 써야 하냐? 아니다. 생성자 함수를 계속 써도 된다.
-// - 프로토 타입을 이해하지 못했다면 클래스를 사용하면 안된다.
-// - 선생님의 경우 생성자 함수는 지저분해 보이고. class사용이 너무 좋아 보인다. 그러나 개인적인 생각이다. 각자의 판단에 맡긴다.
+// 211. 게터 세터
+// javascript의 모든 객체는 setter, getter를 가질 수 있다. 이러한 속성을 assessor properties라고 한다.
+
+const account = {
+  owner : 'Jonas',
+  movements : [200, 530, 120, 300],
+
+  //세터, 게터 두개 다 반드시 사용할 필요는 없다.
+  get latest() { // 게터 (얻다)
+    return this.movements.slice(-1).pop();
+  },
+
+  set latest(mov) { // 세터 (새로운 값 세팅) : 모든 세터 메소드에는 하나 이상 매개 변수가 반드시 있어야 한다.
+    this.movements.push(mov);
+  }
+  
+};
+// 게터 : 새로운 값으로 얻었다.
+console.log(account.latest); // 뒤에 괄호() 붙이는거 아니다.
+// 세터 (메소드처럼 괄호 안에 값을 넣는 것이 아니라 속성 같다.)
+// account.latest(50);
+account.latest = 50;
+console.log(account.movements);
+
+// 위에 예제에 대입을 해보자.
