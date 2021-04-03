@@ -14,6 +14,7 @@ class PersonCl {
   }
 
   // 인스턴스 메소드
+  // .prototype 속성에 모두 포함 된다.
   calcAge() {
     console.log(2021 - this.birthYear);
   }
@@ -40,6 +41,7 @@ class PersonCl {
   }
 
   // 스태틱(정적)메소드
+  // .prototype속성에 포함되지 않는다.
   static hey() {
     console.log('hey there');
     console.log(this);
@@ -116,3 +118,48 @@ console.log(jonas); // Person.hey가 상속되지 않은 것을 볼 수 있다. 
 
 // #3 다른 예제에도 또 적용하는데 클래스 안에 쉽게 적용하는 법. static을 붙인다.
 PersonCl.hey();
+
+// 213. Object.create -------------------------------------------
+// #1
+// 프로토타입에 접근해서 의도적으로 설정할 수 있다.
+const PersonProto = {
+  calcAge() {
+    console.log(2021 - this.birthYear);
+  },
+
+  // #3 steven.birthYear = 2002 이렇게 따로 설정하는 것은 프로그래밍 정신에 옳지 않은 방법이다. 바꾼다.
+  init(firstName, birthYear) {
+    this.firstName = firstName;
+    this.birthYear = birthYear;
+  }
+}
+const steven = Object.create(PersonProto);
+// console.log(steven);
+// steven.birthYear = 2002;
+// steven.calcAge();
+
+steven.init('steven', 2002)
+console.log(steven);
+// notion에 캡처해둔 부분을 보자.
+// 설명으로 하자면 Object인 jonas나 steven에서 __proto__는 상위 객체인 Person.prototype 이였다.
+// 근데 수동으로 __proto__가 가리키는 곳을 이 예제에서처럼 PersonProto로 바꾼 것이다.
+// 거기다가 Constructor function인 Person()이 필요하지 않고 .prototype도 필요 없다.
+// 이것은 거의 사용되지 않는 방법이지만 중요하다. 다음 강의에서 클래스 간의 상속을 구현하기 위해 사용.
+// 일단 한번 steven 으로 증명해보자.
+// console.log(steven.__proto__)
+/*
+  {calcAge: ƒ}
+    calcAge: ƒ calcAge()
+    __proto__: Object
+*/
+// console.log(steven.__proto__ === PersonProto); // true
+
+// #2
+const sarah = Object.create(PersonProto);
+
+// #4
+sarah.init('sarah', 1993); // 이 부분에서 this가 sarah를 가리키게 되고 아래 calcage의 this.birthYear가 sarah의 값을 가져오게 된다.
+console.log(sarah)
+sarah.calcAge();
+
+// 클래스 상속을 할때 중요한 부분이 된다.
