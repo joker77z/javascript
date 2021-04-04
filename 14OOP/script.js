@@ -1,90 +1,38 @@
 'use strict';
+// 215. "클래스"간의 상속 : 생성자 함수
+const Person = function (firstName, birthYear) {
+    this.firstName = firstName;
+    this.birthYear = birthYear;
+};
 
-// 209. 코딩 과제 # 1
-// const Car = function(make, speed) {
-//     this.make = make;
-//     this.speed = speed;
-// }
-
-// Car.prototype.accelerate = function() {
-//     this.speed += 10;
-//     console.log(`${this.make} is going at ${this.speed} km/h`)
-// }
-
-// Car.prototype.break = function() {
-//     this.speed -= 5;
-//     console.log(`${this.make} is going at ${this.speed} km/h`)
-// }
-
-// const bmw = new Car('BMW', 120);
-// const mercedes = new Car('Mercedes', 95);
-
-// bmw.accelerate(); // 130
-// bmw.accelerate(); // 140
-// bmw.accelerate(); // 150
-
-// 214. 코딩 과제 # 2 (209 개선)
-// 내가 한거
-// class CalCl {
-//   constructor(make, speed) {
-//     this.make = make;
-//     this.speed = speed;
-//   }
-
-//   get speedUS() {
-//     return `${this.speed / 1.6}mi/h`
-//   }
-
-//   set speedUS(speed) {
-//     console.log(`${speed * 1.6}km/h`)
-//   }
-
-//   accelerate() {
-//     this.speed += 10
-//     console.log(`${this.make} is going at ${this.speed} km/h`)
-//   }
-
-//   break() {
-//     this.speed -= 5;
-//     console.log(`${this.make} is going at ${this.speed} km/h`)
-//   }
-// }
-
-// const Ford = new CalCl('Ford', 120)
-// console.log(Ford.speedUS) // 75mi/h
-// Ford.speedUS = 75 // 120km/h
-// Ford.accelerate()
-// Ford.accelerate()
-
-// 강의에서
-class CalCl {
-  constructor(make, speed) {
-    this.make = make;
-    this.speed = speed;
-  }
-
-  get speedUS() {
-    return this.speed / 1.6;
-  }
-
-  set speedUS(speed) {
-    this.speed * 1.6;
-  }
-
-  accelerate() {
-    this.speed += 10
-    console.log(`${this.make} is going at ${this.speed} km/h`)
-  }
-
-  break() {
-    this.speed -= 5;
-    console.log(`${this.make} is going at ${this.speed} km/h`)
-  }
+Person.prototype.calcAge = function() {
+    console.log(2037 - this.birthYear);
 }
 
-const Ford = new CalCl('Ford', 120)
-console.log(Ford.speedUS) // 75
-Ford.speedUS = 75 // CalCl {make: "Ford", speed: 120}
-console.log(Ford)
-Ford.accelerate()
-Ford.accelerate()
+const Student = function(firstName, birthYear, course) {
+    // this.firstName = firstName;
+    // this.birthYear = birthYear;
+    Person.call(this, firstName, birthYear);
+    this.course = course;
+}
+
+// 연결! Person의 메소드를 할당받기 위해서 Person의 프로토타입과 Student 프로토 타입을 연결.
+Student.prototype = Object.create(Person.prototype);
+
+Student.prototype.introduce = function() {
+    console.log(`My name is ${this.firstName} and i study ${this.course}`)
+}
+
+const mike = new Student('mike', 2020, 'Computer Science');
+mike.introduce();
+mike.calcAge();
+
+console.log(mike.__proto__);
+console.log(mike.__proto__.__proto__);
+
+// Student 와 Person을 연결했기 때문에 true가 나온다.
+console.log(mike instanceof Student); // true
+console.log(mike instanceof Person); // true
+
+Student.prototype.constructor = Student; // 그래서 이렇게 지정했다.
+console.dir(Student.prototype.constructor) // Person이 나오면 안된다. 고쳐야 한다. ↑
