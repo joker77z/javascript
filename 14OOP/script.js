@@ -1,31 +1,42 @@
 'use strict';
 
-  
-// 213. Object.create -------------------------------------------
-const PersonProto = {
-calcAge() {
-    console.log(2021 - this.birthYear);
-},
+// 219. 다른 클래스 예제
+class Account {
+    constructor(owner, currency, pin) {
+        this.owner = owner;
+        this.currency = currency;
+        this.pin = pin;
+        this.movements = [];
+        this.locale = navigator.language;
 
-init(firstName, birthYear) {
-    this.firstName = firstName;
-    this.birthYear = birthYear;
-}
-}
-const steven = Object.create(PersonProto);
+        console.log(`Thanks for opening an account, ${owner}`);
+    }
 
-// 218. "클래스"간의 상속 : Object.create
-const StudentProto = Object.create(PersonProto);
-StudentProto.init = function(firstName, birthYear, course) {
-    PersonProto.init.call(this, firstName, birthYear);
-    this.course = course;
+    deposit(val) {
+        this.movements.push(val);
+    }
+
+    withdrawl(val) {
+        return this.deposit(-val);
+    }
+
+    approveLoan(val) {
+        return true;
+    }
+
+    requestLoan(val) {
+        if(this.approveLoan(val)) {
+            this.deposit(val);
+            console.log(`Loan approved`);
+        }
+    }
 }
 
-StudentProto.introduce = function() {
-    console.log(`My name is ${this.firstName} and i study ${this.course}`);
-}
-
-const jay = Object.create(StudentProto);
-jay.init('Jay', 2010, 'computer science');
-jay.introduce();
-jay.calcAge();
+const acc1 = new Account('Jonas', 'EUR', 1111)
+// acc1.movements.push(250);
+// acc1.movements.push(-140);
+acc1.deposit(250);
+acc1.withdrawl(140);
+acc1.requestLoan(1000);
+acc1.approveLoan(1000); // 아무 일도 일어나지 않지만 현실에서는 이렇게 접근할 수가 없어야 한다.
+console.log(acc1);
