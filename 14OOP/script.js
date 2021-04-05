@@ -52,10 +52,12 @@ class Account {
 
     deposit(val) {
         this.#movements.push(val);
+        return this;
     }
 
     withdrawl(val) {
         return this.deposit(-val);
+        return this;
     }
 
     // 은행 내부적으로 승인을 결정하는 것이기 때문에 이것도 보호한다.
@@ -67,6 +69,7 @@ class Account {
         if(this._approveLoan(val)) {
             this.deposit(val);
             console.log(`Loan approved`);
+            return this;
         }
     }
 
@@ -105,3 +108,9 @@ console.log(acc1.getMovements());
 // console.log(acc1.#pin);
 // console.log(acc1.#approveLoan(1000));
 Account.helper()
+
+// 222. 연결 방법
+// chaining
+acc1.deposit(300).deposit(500).withdrawl(35).requestLoan(25000).withdrawl(4000); // 이렇게 하면 deposit이 return하는 것이 없어서 에러가 발생한다.
+console.log(acc1.getMovements());
+// 그래서 return을 위에서 준다;.
