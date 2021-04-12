@@ -6,26 +6,9 @@ const countriesContainer = document.querySelector('.countries');
 ///////////////////////////////////////
 // 244. 첫번째 ajax 호출 : xmlhttprequest
 
-const getCountryData = function (country) {
-  const request = new XMLHttpRequest();
-  // 데이터 전달 유형 선택. 여기서는 데이터를 얻는 것이니 GET.
-  // 두번째 인자로 깃허브에 public api에서 사용할 주소를 넣는다.
-  // ctrl+ f : rest countries 검색
-  // auth는 추가로 인증이 필요한지.
-  // CORS는 Cross Origin Resource Sharing.
-  // 즉, CORS가 없으면 타사 API에 액세스 할 수 없다.
-  request.open('GET', `https://restcountries.eu/rest/v2/name/${country}`);
-  request.send();
-  // console.log(request.responseText); // 아무 데이터도 나오지 않는다. 왜냐면 아직 완전히 load가 되지 않은 상태여서 그런듯 하다.
-  // 요청 보낸 것이 다 load됬을 때 콜백함수 실행.
-  request.addEventListener('load', function () {
-    //   console.log(this.responseText); // JSON이 나타난다. 객체 형태지만 제대로 정리가 되어있지 않은 형태로 나타난다.
-    //그래서 JSON.parse를 사용한다.
-    const [data] = JSON.parse(this.responseText);
-    console.log(data);
-
-    const html = `
-    <article class="country">
+const renderCountry = function (data, className = '') {
+  const html = `
+    <article class="country ${className}">
             <img class="country__img" src="${data.flag}" />
             <div class="country__data">
               <h3 class="country__name">${data.name}</h3>
@@ -42,12 +25,40 @@ const getCountryData = function (country) {
             </div>
           </article>
           `;
-    countriesContainer.insertAdjacentHTML('beforeend', html);
-    countriesContainer.style.opacity = 1;
+  countriesContainer.insertAdjacentHTML('beforeend', html);
+  countriesContainer.style.opacity = 1;
+};
+const getCountryAndNeightbour = function (country) {
+  // AJAX call country1
+  const request = new XMLHttpRequest();
+  request.open('GET', `https://restcountries.eu/rest/v2/name/${country}`);
+  request.send();
+  request.addEventListener('load', function () {
+    const [data, data2] = JSON.parse(this.responseText);
+    // console.log(data);
+    console.log(data2);
+
+    // Render Country 1
+    renderCountry(data2);
+
+    // Get neighbour country (2개)
+    const [neighbour] = data2.borders;
+    console.log([neighbour]);
+
+    if (!neighbour) return; // 존재하지 않으면 return해서 오류발생안되고 진행되게.
+
+    // AJAX call country2
+    const request2 = new XMLHttpRequest();
+    request2.open('GET', `https://restcountries.eu/rest/v2/alpha/${neighbour}`);
+    request2.send();
+    request2.addEventListener('load', function () {
+      // console.log(this.responseText);
+      const data2 = JSON.parse(this.responseText); //data2를 배열에 넣지 않아야 오류가 나오지 않는다. 이유는 코드 방식으로 불러온 api의 경우 배열의 형식이 아니다.
+      console.log(data2);
+
+      renderCountry(data2, 'neighbour');
+    });
   });
 };
-getCountryData('korea');
-getCountryData('usa');
-getCountryData('germany');
-// 이렇게 하면 가끔 순서가 바뀌어서 나온다.
-// 다음 강의에 콜백지옥을 보여주겠다.
+getCountryAndNeightbour('kor');
+// ES6부터 이 콜백지옥을 해결하기 위한 방법이 있다. 다음강의에서.
