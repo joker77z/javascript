@@ -26,7 +26,7 @@ const renderCountry = function (data, className = '') {
           </article>
           `;
   countriesContainer.insertAdjacentHTML('beforeend', html);
-  countriesContainer.style.opacity = 1;
+  // countriesContainer.style.opacity = 1;
 };
 // const getCountryAndNeightbour = function (country) {
 //   // AJAX call country1
@@ -82,11 +82,18 @@ const renderCountry = function (data, className = '') {
 // };
 // getCountryData('korea');
 
-// 콘솔로그제거. 화살표 함수로 변환.
+const renderError = function (msg) {
+  countriesContainer.insertAdjacentText('beforeend', msg);
+  // countriesContainer.style.opacity = 1;
+};
+
 const getCountryData = function (country) {
   //country1
   fetch(`https://restcountries.eu/rest/v2/name/${country}`)
-    .then(response => response.json())
+    .then(
+      response => response.json()
+      // err => alert(err) // 첫번째 방법. 여기서 오류를 캐치해서 console에 uncaught오류 발생이 x
+    )
     .then(data => {
       renderCountry(data[1]);
       const neighbour = data[1].borders[0];
@@ -95,8 +102,27 @@ const getCountryData = function (country) {
       // country2
       return fetch(`https://restcountries.eu/rest/v2/alpha/${neighbour}`);
     })
-    .then(response => response.json())
-    .then(data => renderCountry(data, 'neighbour'));
+    .then(
+      response => response.json()
+      // arr => alert(arr) // 이 fetch를 가져올 때에 대한 arr 대응도 해준다.
+    )
+    .then(data => renderCountry(data, 'neighbour'))
+    .catch(err => {
+      console.error(`${err}!`); // 두번째. 더 좋은 방법. 오류는 기본적으로 잡힐 때 까지 쭉 밑으로 내려간다.
+      // 그리고 어디에도 잡히지 않을 경우 Uncaught 오류가 발생한다.
+      renderError(`something wrong : ${err.message}`); // err에 message만.
+    })
+    .finally(() => {
+      countriesContainer.style.opacity = 1;
+    }); // 풀필드나 리젝트 되더라도 항상 실행된다.
+  // 정리하면 풀필드일때는 then이 실행을.
+  // 리젝트 될 때는 catch 실행을.
+  // finally 는 항상. 매번 쓰이지는 않는다. 데이터를 로드할 때 작업이 완료되기 전에 보여주는 돌아가는 원 만들때 쓴다.
+  // opacity 1로 만드는 것을 여기다가 쓰자.
 };
-getCountryData('korea');
-// 다음강의에서 이웃나라도 추가하면서 PROMISE로 순서를 어떻게 정하나 보자.
+// 250. 거부 된 약속 처리
+btn.addEventListener('click', function () {
+  getCountryData('korea');
+});
+
+getCountryData('koreaa'); // 이것을 입력했을 때 이 이름을 가진 국가를 찾을 수 없습니다. 라는 문구가 나오도록 다음강의에서 연습.
