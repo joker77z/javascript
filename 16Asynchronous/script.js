@@ -63,7 +63,7 @@ const renderCountry = function (data, className = '') {
 // getCountryAndNeightbour('kor');
 // ES6부터 이 콜백지옥을 해결하기 위한 방법이 있다. 다음강의에서.
 
-// 257. ES6에서 ajax. fetch활용
+// 247. ES6에서 ajax. fetch활용
 // 불러오기 위한 다양한 옵션을 여기서 줄 수 있으나 단순하게 URL만 전달할거라 간단하다.
 // const request = fetch('https://restcountries.eu/rest/v2/name/korea');
 // console.log(request);
@@ -84,9 +84,19 @@ const renderCountry = function (data, className = '') {
 
 // 콘솔로그제거. 화살표 함수로 변환.
 const getCountryData = function (country) {
+  //country1
   fetch(`https://restcountries.eu/rest/v2/name/${country}`)
     .then(response => response.json())
-    .then(data => renderCountry(data[1]));
+    .then(data => {
+      renderCountry(data[1]);
+      const neighbour = data[1].borders[0];
+
+      if (!neighbour) return;
+      // country2
+      return fetch(`https://restcountries.eu/rest/v2/alpha/${neighbour}`);
+    })
+    .then(response => response.json())
+    .then(data => renderCountry(data, 'neighbour'));
 };
 getCountryData('korea');
 // 다음강의에서 이웃나라도 추가하면서 PROMISE로 순서를 어떻게 정하나 보자.
