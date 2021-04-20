@@ -19,3 +19,33 @@ console.log("importing module");
 import add, {cart} from './shoppingCart.js';
 add('pizza', 5);
 console.log(cart); // 배열이 나온다.
+
+// #4 script.js 내부에서 모듈처럼 사용하는 모듈 만들기.
+// 이런걸 클로저라고 한다. ES6 이전에는 이렇게 사용했다.
+// 여러가지 제한이 있어서 ES6에 네이티브 모듈이 추가됐다.
+const ShoppingCart2 = (function() {
+    const cart = [];
+    const shippingCost = 10;
+    const totalPrice = 237;
+    const totalQuantity = 23;
+
+    const addToProduct = function(product, quantity) {
+        cart.push({product, quantity});
+        console.log(`${product} ${quantity} added to cart`);
+    }
+
+    const orderStock = function(product, quantity) {
+        cart.push({product, quantity})
+        console.log(`${product} ${quantity} ordered from supplier`);
+    }
+
+    return {
+        addToProduct,
+        cart,
+        totalPrice,
+        totalQuantity,
+    }
+})();
+
+ShoppingCart2.addToProduct('apple', 4);
+console.log(ShoppingCart2);
