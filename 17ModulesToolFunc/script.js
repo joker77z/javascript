@@ -5,7 +5,7 @@
 
 /* importing module */
 // import { addToProduct, totalPrice as price, tq } from "./shoppingCart.js"; // 확장자 없이도 작동한다. 항상 먼저 실행이다. 호이스팅 된다.
-console.log("importing module");
+// console.log("importing module");
 // console.log(shoppingCost); // 모듈안에 있는 변수는 private이라 호출안된다.
 // addToProduct("bread", 5);
 // console.log(price, tq);
@@ -16,13 +16,16 @@ console.log("importing module");
 
 // #3 default 모듈 가져오기
 // 모듈안에 한개의 기능만 사용할 때는 아래와 같은 방법이 좋다.
+/*
 import add, {cart} from './shoppingCart.js';
 add('pizza', 5);
 console.log(cart); // 배열이 나온다.
+*/
 
 // #4 script.js 내부에서 모듈처럼 사용하는 모듈 만들기.
 // 이런걸 클로저라고 한다. ES6 이전에는 이렇게 사용했다.
 // 여러가지 제한이 있어서 ES6에 네이티브 모듈이 추가됐다.
+/*
 const ShoppingCart2 = (function() {
     const cart = [];
     const shippingCost = 10;
@@ -49,6 +52,7 @@ const ShoppingCart2 = (function() {
 
 ShoppingCart2.addToProduct('apple', 4);
 console.log(ShoppingCart2);
+*/
 
 /* 270. CommonJS 모듈 */
 // ES6 이전에는 이렇게 작성해왔다. 하지만 ES6 이후에도 이 방법은 알아야 한다. Node.js때문이라도.
@@ -62,3 +66,21 @@ console.log(ShoppingCart2);
 
 // // import
 // const {addToCart} = require('./shoppingCart.js');
+
+// 272. NPM 소개
+// defalut export라서 cloneDeep이라고 안해도 되지만 그래도 하겠다.
+import cloneDeep from './node_modules/lodash-es/cloneDeep.js';
+
+const state = {
+    cart : [
+        {product : 'bread', quantity : 5},
+        {product : 'bread', quantity : 5}
+    ],
+    user : {loggedIn : true}
+}
+const stateClone = Object.assign({}, state);
+const stateDeepClone = cloneDeep(state);
+state.user.loggedIn = false;
+
+console.log(stateClone); // false. 원본이 변하면 클론이 변할 수 있다.
+console.log(stateDeepClone); // true. 원본이 변해도 클론이 변하지 않는다.
