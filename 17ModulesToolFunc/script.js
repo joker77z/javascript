@@ -49,3 +49,16 @@ const ShoppingCart2 = (function() {
 
 ShoppingCart2.addToProduct('apple', 4);
 console.log(ShoppingCart2);
+
+/* 270. CommonJS 모듈 */
+// ES6 이전에는 이렇게 작성해왔다. 하지만 ES6 이후에도 이 방법은 알아야 한다. Node.js때문이라도.
+// node.js에서 작동한다. 아래코드는 그냥 보기만하자. 브라우저에서 안된다.
+// node.js에서 export와 import는 이렇게 한다.
+// export
+// export.addToCart = function (product, quantity) {
+//     cart.push({product, quantity});
+//     console.log(`${product} ${quantity} added to cart`);
+// }
+
+// // import
+// const {addToCart} = require('./shoppingCart.js');
